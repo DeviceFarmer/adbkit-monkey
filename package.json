@@ -44,7 +44,7 @@
     "grunt-notify": "~0.2.16",
     "mocha": "~1.14.0",
     "sinon": "~1.17.7",
-    "sinon-chai": "~2.4.0"
+    "sinon-chai": "~2.5.0"
   },
   "engines": {
     "node": ">= 0.10.4"
