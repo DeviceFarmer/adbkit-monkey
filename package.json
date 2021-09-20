@@ -17,7 +17,7 @@
     "email": "contact@devicefarmer.com",
     "url": "https://devicefarmer.com/"
   },
-  "main": "./index",
+  "main": "./lib/monkey.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/DeviceFarmer/adbkit-monkey.git"
