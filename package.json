@@ -27,9 +27,6 @@
     "prepublish": "grunt coffee",
     "test": "grunt test"
   },
-  "dependencies": {
-    "async": "~0.2.9"
-  },
   "devDependencies": {
     "chai": "~1.8.1",
     "coffee-script": "~1.6.3",
