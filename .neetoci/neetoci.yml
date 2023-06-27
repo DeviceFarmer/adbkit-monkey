@@ -1,0 +1,13 @@
+version: v1.0
+name: neetoCi
+global_job_config:
+  setup:
+    - checkout
+    - neetoci-version node 12
+    - cache restore
+    - npm install
+    - cache store
+  jobs:
+    - name: CiChecks
+      commands:
+        - npm test
