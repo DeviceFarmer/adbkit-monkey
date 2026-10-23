@@ -20,11 +20,12 @@
   "main": "./lib/monkey.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/DeviceFarmer/adbkit-monkey.git"
+    "url": "git+https://github.com/DeviceFarmer/adbkit-monkey.git"
   },
   "scripts": {
+    "build": "grunt coffee",
     "postpublish": "grunt clean",
-    "prepublish": "grunt coffee",
+    "prepare": "grunt coffee",
     "test": "grunt test"
   },
   "devDependencies": {
