@@ -21,6 +21,14 @@ We are happy to accept any contributions that make sense and respect the rules l
 * **Do not** commit any generated files, unless already in the repo. If absolutely necessary, explain why.
 * **Do not** create any top level files or directories. If absolutely necessary, explain why and update [.npmignore](.npmignore).
 
+## Releasing
+
+Releases are cut with GitHub Actions:
+
+1. Run the `Prepare release` workflow on `master` with the new version. It bumps `package.json`, adds the release notes to [CHANGELOG.md](CHANGELOG.md) and pushes a `release/v<version>` branch.
+2. Open a pull request for that branch, label it `ignore-for-release` and merge it once the checks pass.
+3. Run the `Release` workflow on `master` with the same version. It tags the release, creates the GitHub release and publishes to npm with trusted publishing.
+
 ## License
 
 By contributing your code, you agree to license your contribution under our [LICENSE](LICENSE).

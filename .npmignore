@@ -10,3 +10,4 @@
 /temp/
 /git_hooks/
 *.!sync
+/.github/
