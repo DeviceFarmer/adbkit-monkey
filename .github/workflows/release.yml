@@ -89,7 +89,7 @@ jobs:
     name: Publish to npm
     needs: release
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 15
     permissions:
       contents: read
       id-token: write
@@ -105,46 +105,41 @@ jobs:
       - name: Take npm to a version that can publish with OIDC
         run: npm install -g npm@^11.5.1
 
-      # No lockfile is committed, so npm ci is not an option.
       - name: Install
-        run: npm install
+        run: npm ci --no-audit --no-fund
 
-      # npm 7 and later no longer run the prepublish script on publish, which is
-      # what used to compile the CoffeeScript, so it is built explicitly here.
+      # The build and the tests run here explicitly; prepublishOnly repeats them
+      # on npm publish, which also covers a publish from a laptop.
       - name: Build
-        run: npm run build
+        run: npm run compile
 
-      # Scripts are skipped so the check sees exactly what Build produced, and
-      # so script output cannot end up in the JSON.
-      - name: Check the tarball has the compiled JavaScript
+      - name: Test
+        run: npm test
+
+      - name: Check the tarball has every compiled module
         run: |
           set -euo pipefail
-          npm pack --dry-run --json --ignore-scripts > "$RUNNER_TEMP/pack.json"
-          find src -name '*.coffee' > "$RUNNER_TEMP/sources.txt"
+          npm pack --dry-run --json > "$RUNNER_TEMP/pack.json"
+          # Each TypeScript source has to ship as JavaScript with its declarations.
+          git ls-files 'lib/*.ts' index.ts | sed 's/\.ts$//' > "$RUNNER_TEMP/modules.txt"
           node -e '
             var fs = require("fs")
-            var path = require("path")
             var files = require(process.argv[1])[0].files.map(function(f) { return f.path })
-            // main may omit the extension, as require() allows.
-            var main = path.posix.normalize(require("./package.json").main)
-            if (!/\.js$/.test(main)) {
-              main += ".js"
-            }
-            var expected = [main]
-            // Every src/**/*.coffee compiles to the same path under lib/.
-            fs.readFileSync(process.argv[2], "utf8").split("\n").filter(Boolean).forEach(function(source) {
-              expected.push(source.replace(/^src\//, "lib/").replace(/\.coffee$/, ".js"))
-            })
-            var missing = expected.filter(function(file) {
-              return files.indexOf(file) < 0
+            var modules = fs.readFileSync(process.argv[2], "utf8").split("\n").filter(Boolean)
+            var missing = []
+            modules.forEach(function(module) {
+              ;[".js", ".d.ts"].forEach(function(ext) {
+                if (files.indexOf(module + ext) < 0) {
+                  missing.push(module + ext)
+                }
+              })
             })
             console.log(files.join("\n"))
-            if (missing.length) {
-              console.error("::error::missing from the tarball: " + missing.join(", "))
+            if (!modules.length || missing.length) {
+              console.error("::error::missing from the tarball: " + (missing.join(", ") || "every module"))
               process.exit(1)
             }
-          ' "$RUNNER_TEMP/pack.json" "$RUNNER_TEMP/sources.txt"
+          ' "$RUNNER_TEMP/pack.json" "$RUNNER_TEMP/modules.txt"
 
-      # postpublish cleans the build output, but only once the upload is done.
       - name: Publish
         run: npm publish --access public
