@@ -53,7 +53,7 @@ module.exports = (grunt) ->
           '--colors'
           '--recursive'
         ],
-        cmd: './node_modules/.bin/mocha <%= exec.mocha.options.join(" ") %>'
+        cmd: './node_modules/.bin/_mocha <%= exec.mocha.options.join(" ") %>'
 
   grunt.loadNpmTasks 'grunt-contrib-clean'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
