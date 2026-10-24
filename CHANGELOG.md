@@ -11,7 +11,7 @@
 
 * Change the `main` field to fix prebundle tools like snowpack
 
-## 1.0.2 (2021-03-09)
+## 1.1.0 (2021-03-08)
 
 * Dependency updates
 * Change namespace to @devicefarmer
