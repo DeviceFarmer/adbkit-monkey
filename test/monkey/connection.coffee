@@ -37,6 +37,7 @@ describe 'Connection', ->
     it "should emit 'connect' when underlying stream does", (done) ->
       monkey = new Connection().connect @options
       monkey.on 'connect', ->
+        monkey.end()
         done()
 
   describe 'connect(options)', ->
@@ -46,4 +47,8 @@ describe 'Connection', ->
       monkey = new Connection().connect @options
       expect(Net.connect).to.have.been.calledWith @options
       Net.connect.restore()
-      done()
+      # Finish connecting before the server closes in after(), or the socket
+      # fails with nothing listening for its error.
+      monkey.on 'connect', ->
+        monkey.end()
+        done()
